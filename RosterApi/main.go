@@ -6,13 +6,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Player Data Structure
+// Data Structures
 
 type Player struct {
 	JerseyNumber int `json:"jerseyNumber"`
 	FirstName string `json:"firstName"`
 	LastName string `json:"lastName"`
 	Position string `json:"position"`
+}
+
+type ReturnMessage struct {
+	Message string `json:"message"`
 }
 
 // Service Entry Point
@@ -31,9 +35,14 @@ func main() {
 	
 	fmt.Println("Starting Server")
 	
-	errorCode := http.ListenAndServe(":2222", router)
-	if errorCode != nil {
-		panic(errorCode)
+	err := http.ListenAndServe(":2222", router)
+	errorHandler(err)
+}
+
+// Utility Functions
+
+func errorHandler(err error) {
+	if err != nil {
+		panic(err)
 	}
-	
 }

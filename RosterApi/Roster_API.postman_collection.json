@@ -115,7 +115,7 @@
 			"response": []
 		},
 		{
-			"name": "Update Player Copy",
+			"name": "Update Player",
 			"request": {
 				"method": "PATCH",
 				"header": [],

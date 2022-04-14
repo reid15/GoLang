@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"database/sql"
+	"strconv"
 	_ "github.com/lib/pq"
 )
 
@@ -21,7 +23,7 @@ func getDatabase() *sql.DB {
 	return database
 }
 
-func getPlayer(jerseyNumber string) string {
+func getPlayer(jerseyNumber string) (Player, error) {
 	var firstName string
 	var lastName string
 	var position string
@@ -31,54 +33,65 @@ func getPlayer(jerseyNumber string) string {
 	var query string = "SELECT first_name, last_name, position FROM public.roster WHERE jersey_number = $1"
 	
 	row := database.QueryRow(query, jerseyNumber)
-	errorCode := row.Scan(&firstName, &lastName, &position)
-	if errorCode != nil {
-		if errorCode == sql.ErrNoRows{
-			panic("Player Not Found")
+	err := row.Scan(&firstName, &lastName, &position)
+	if err != nil {
+		if err == sql.ErrNoRows{
+			return Player {}, errors.New("Player Not Found")
 		} else {
-			panic(errorCode)
+			panic(err)
 		}
 	}
 	
-	return fmt.Sprintf("Player %s %s Is A %s", firstName, lastName, position)
+	jerseyNumberInt, err := strconv.Atoi(jerseyNumber)
+	errorHandler(err)
+	
+	player := Player {
+		JerseyNumber: jerseyNumberInt,
+		FirstName: firstName,
+		LastName: lastName,
+		Position: position,
+	}
+	
+	return player, nil
 }
 
-func getAllPlayers () string {
+func getAllPlayers () []Player {
 	database := getDatabase()
 	var query string = "SELECT jersey_number, first_name, last_name, position FROM public.roster ORDER BY jersey_number"
 	
-	result, errorCode := database.Query(query)
-	if errorCode != nil {
-		panic(errorCode)
-	}
+	result, err := database.Query(query)
+	errorHandler(err)
 	
-	var outputString string
+	var outputArray []Player
 	for result.Next() {
-		var jerseyNumber string
+		var jerseyNumber int
 		var firstName string
 		var lastName string
 		var position string
 	
 		result.Scan(&jerseyNumber, &firstName, &lastName, &position)
-		outputString += fmt.Sprintf("Player #%s %s %s Is A %s \n", jerseyNumber, firstName, lastName, position)
+		
+		player := Player {
+			JerseyNumber: jerseyNumber,
+			FirstName: firstName,
+			LastName: lastName,
+			Position: position,
+		}
+		
+		outputArray = append(outputArray, player)
+		
 	}
-	return outputString
+	return outputArray
 }
 
 func addPlayer (player Player) int64 {
 	database := getDatabase()
 	sql, err := database.Prepare("INSERT INTO public.roster (jersey_number, first_name, last_name, position) VALUES ($1, $2, $3, $4)")
-	if err != nil {
-		panic(err)
-	}
+	errorHandler(err)
 	result, err := sql.Exec(player.JerseyNumber, player.FirstName, player.LastName, player.Position)
-	if err != nil {
-		panic(err)
-	}
+	errorHandler(err)
 	rowCount, err := result.RowsAffected()
-	if err != nil {
-		panic(err)
-	}
+	errorHandler(err)
 	
 	return rowCount
 }
@@ -91,10 +104,8 @@ func connectionTest() string {
 	var query string = "SELECT version()"
 	
 	row := database.QueryRow(query)
-	errorCode := row.Scan(&version)
-	if errorCode != nil {
-		panic(errorCode)
-	}
+	err := row.Scan(&version)
+	errorHandler(err)
 	
 	return fmt.Sprintf("Connected: %s", version)
 }
@@ -102,17 +113,11 @@ func connectionTest() string {
 func deletePlayer(jerseyNumber string) int64 {
 	database := getDatabase()
 	sql, err := database.Prepare("DELETE FROM public.roster WHERE jersey_number = $1")
-	if err != nil {
-		panic(err)
-	}
+	errorHandler(err)
 	result, err := sql.Exec(jerseyNumber)
-	if err != nil {
-		panic(err)
-	}
+	errorHandler(err)
 	rowCount, err := result.RowsAffected()
-	if err != nil {
-		panic(err)
-	}
+	errorHandler(err)
 	
 	return rowCount
 }
@@ -122,17 +127,11 @@ func deletePlayer(jerseyNumber string) int64 {
 func updatePlayer(player Player) int64 {
 	database := getDatabase()
 	sql, err := database.Prepare("UPDATE public.roster SET position = $1 WHERE jersey_number = $2")
-	if err != nil {
-		panic(err)
-	}
+	errorHandler(err)
 	result, err := sql.Exec(player.Position, player.JerseyNumber)
-	if err != nil {
-		panic(err)
-	}
+	errorHandler(err)
 	rowCount, err := result.RowsAffected()
-	if err != nil {
-		panic(err)
-	}
+	errorHandler(err)
 	
 	return rowCount
 }
