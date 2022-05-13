@@ -11,14 +11,12 @@ import (
 // Database Functions
 
 func getDatabase() *sql.DB {
-	var host string = "localhost"
-	var port string = "5432"
-	var databaseName string = "test_db"
-	var userName string = "test_user2"
-	var pwd string = "password1"
-	
-	var connectionString string = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, userName, pwd, databaseName)
-	database, _ := sql.Open("postgres", connectionString)
+	setDatabaseConfig()
+	port := strconv.FormatInt(int64(GlobalDatabaseConfig.Port), 10)
+	var connectionString string = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", GlobalDatabaseConfig.Host, port, GlobalDatabaseConfig.UserName, GlobalDatabaseConfig.Password, GlobalDatabaseConfig.DB_Name)
+		
+	database, err := sql.Open("postgres", connectionString)
+	errorHandler(err)
 	
 	return database
 }

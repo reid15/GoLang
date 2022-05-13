@@ -19,6 +19,14 @@ type ReturnMessage struct {
 	Message string `json:"message"`
 }
 
+type DatabaseConfig struct {
+	Host string `json:"db_host"`
+	Port int `json:"db_port"`
+	DB_Name string `json:"db_name"`
+	UserName string `json:"db_userName"`
+	Password string `json:"db_password"`
+}
+
 // Service Entry Point
 
 func main() {

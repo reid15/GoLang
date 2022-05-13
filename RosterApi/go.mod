@@ -1,4 +1,4 @@
-module example.com/m
+module RosterApi
 
 go 1.17
 
