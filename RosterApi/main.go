@@ -31,15 +31,16 @@ type DatabaseConfig struct {
 
 func main() {
 	router := mux.NewRouter()
+	db := getDatabase()
 	
 	// Map API calls to a request handler function
-	
-	router.HandleFunc("/players/connectionTest", connectionTestRequest).Methods("GET")
-	router.HandleFunc("/players/", getAllPlayersRequest).Methods("GET")
-	router.HandleFunc("/players/{jerseyNumber}", getPlayerRequest).Methods("GET")
-	router.HandleFunc("/players/", addPlayerRequest).Methods("POST")
-	router.HandleFunc("/players/{jerseyNumber}", deletePlayerRequest).Methods("DELETE")
-	router.HandleFunc("/players/", updatePlayerRequest).Methods("PATCH")
+
+	router.HandleFunc("/players/connectionTest", func(w http.ResponseWriter, r *http.Request) { connectionTestRequest(w, r, db)}).Methods("GET")
+	router.HandleFunc("/players/", func(w http.ResponseWriter, r *http.Request) { getAllPlayersRequest(w, r, db)}).Methods("GET")
+	router.HandleFunc("/players/{jerseyNumber}", func(w http.ResponseWriter, r *http.Request) { getPlayerRequest(w, r, db)}).Methods("GET")
+	router.HandleFunc("/players/", func(w http.ResponseWriter, r *http.Request) { addPlayerRequest(w, r, db)}).Methods("POST")
+	router.HandleFunc("/players/{jerseyNumber}", func(w http.ResponseWriter, r *http.Request) { deletePlayerRequest(w, r, db)}).Methods("DELETE")
+	router.HandleFunc("/players/", func(w http.ResponseWriter, r *http.Request) { updatePlayerRequest(w, r, db)}).Methods("PATCH")
 	
 	fmt.Println("Starting Server")
 	

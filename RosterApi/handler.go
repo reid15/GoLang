@@ -3,6 +3,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -11,13 +12,13 @@ import (
 
 // Request Handlers
 
-func connectionTestRequest(rw http.ResponseWriter, r *http.Request) {
-	connectionMessage := connectionTest()
+func connectionTestRequest(rw http.ResponseWriter, r *http.Request, db *sql.DB) {
+	connectionMessage := connectionTest(db)
 	returnMessage(rw, connectionMessage)
 }
 
-func getAllPlayersRequest(rw http.ResponseWriter, r *http.Request) {
-	players := getAllPlayers()
+func getAllPlayersRequest(rw http.ResponseWriter, r *http.Request, db *sql.DB) {
+	players := getAllPlayers(db)
 	playerJson, err := json.Marshal(players)
 	errorHandler(err)
 		
@@ -26,7 +27,7 @@ func getAllPlayersRequest(rw http.ResponseWriter, r *http.Request) {
 	rw.Write(playerJson)
 }
 
-func getPlayerRequest(rw http.ResponseWriter, r *http.Request) {
+func getPlayerRequest(rw http.ResponseWriter, r *http.Request, db *sql.DB) {
 	vars := mux.Vars(r)
 	err := isValidJerseyNumberString(vars["jerseyNumber"])
 	if err != nil {
@@ -34,7 +35,7 @@ func getPlayerRequest(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-    player, err := getPlayer(vars["jerseyNumber"])
+    player, err := getPlayer(vars["jerseyNumber"], db)
 	if err != nil {
 		writeErrorMessage(rw, err, 500)
 		return
@@ -48,7 +49,7 @@ func getPlayerRequest(rw http.ResponseWriter, r *http.Request) {
 	rw.Write(playerJson)
 }
 
-func addPlayerRequest(rw http.ResponseWriter, r *http.Request) {
+func addPlayerRequest(rw http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var player Player
 	
 	decoder := json.NewDecoder(r.Body)
@@ -62,24 +63,24 @@ func addPlayerRequest(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	recordCount := addPlayer(player)
+	recordCount := addPlayer(player, db)
 	response := strconv.FormatInt(recordCount, 10) + " Record(s) Affected"
 	returnMessage(rw, response)
 }
 
-func deletePlayerRequest(rw http.ResponseWriter, r *http.Request) {
+func deletePlayerRequest(rw http.ResponseWriter, r *http.Request, db *sql.DB) {
 	vars := mux.Vars(r)
 	err := isValidJerseyNumberString(vars["jerseyNumber"])
 	if err != nil {
 		writeErrorMessage(rw, err, 400)
 		return
 	}
-    recordCount := deletePlayer(vars["jerseyNumber"])
+    recordCount := deletePlayer(vars["jerseyNumber"], db)
 	response := strconv.FormatInt(recordCount, 10) + " Record(s) Affected"
 	returnMessage(rw, response)
 }
 
-func updatePlayerRequest(rw http.ResponseWriter, r *http.Request) {
+func updatePlayerRequest(rw http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var player Player
 	
 	decoder := json.NewDecoder(r.Body)
@@ -93,7 +94,7 @@ func updatePlayerRequest(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	recordCount := updatePlayer(player)
+	recordCount := updatePlayer(player, db)
 	response := strconv.FormatInt(recordCount, 10) + " Record(s) Affected"
 	returnMessage(rw, response)
 }

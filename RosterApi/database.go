@@ -21,12 +21,10 @@ func getDatabase() *sql.DB {
 	return database
 }
 
-func getPlayer(jerseyNumber string) (Player, error) {
+func getPlayer(jerseyNumber string, database *sql.DB) (Player, error) {
 	var firstName string
 	var lastName string
 	var position string
-	
-	database := getDatabase()
 	
 	var query string = "SELECT first_name, last_name, position FROM public.roster WHERE jersey_number = $1"
 	
@@ -53,8 +51,7 @@ func getPlayer(jerseyNumber string) (Player, error) {
 	return player, nil
 }
 
-func getAllPlayers () []Player {
-	database := getDatabase()
+func getAllPlayers (database *sql.DB) []Player {
 	var query string = "SELECT jersey_number, first_name, last_name, position FROM public.roster ORDER BY jersey_number"
 	
 	result, err := database.Query(query)
@@ -82,8 +79,7 @@ func getAllPlayers () []Player {
 	return outputArray
 }
 
-func addPlayer (player Player) int64 {
-	database := getDatabase()
+func addPlayer (player Player, database *sql.DB) int64 {
 	sql, err := database.Prepare("INSERT INTO public.roster (jersey_number, first_name, last_name, position) VALUES ($1, $2, $3, $4)")
 	errorHandler(err)
 	result, err := sql.Exec(player.JerseyNumber, player.FirstName, player.LastName, player.Position)
@@ -94,22 +90,14 @@ func addPlayer (player Player) int64 {
 	return rowCount
 }
 
-func connectionTest() string {
-	var version string
-	
-	database := getDatabase()
-	
-	var query string = "SELECT version()"
-	
-	row := database.QueryRow(query)
-	err := row.Scan(&version)
+func connectionTest(database *sql.DB) string {
+	err := database.Ping()
 	errorHandler(err)
 	
-	return fmt.Sprintf("Connected: %s", version)
+	return fmt.Sprintf("Database Ping Successful")
 }
 
-func deletePlayer(jerseyNumber string) int64 {
-	database := getDatabase()
+func deletePlayer(jerseyNumber string, database *sql.DB) int64 {
 	sql, err := database.Prepare("DELETE FROM public.roster WHERE jersey_number = $1")
 	errorHandler(err)
 	result, err := sql.Exec(jerseyNumber)
@@ -122,8 +110,7 @@ func deletePlayer(jerseyNumber string) int64 {
 
 // Allow the player's position to be updated
 
-func updatePlayer(player Player) int64 {
-	database := getDatabase()
+func updatePlayer(player Player, database *sql.DB) int64 {
 	sql, err := database.Prepare("UPDATE public.roster SET position = $1 WHERE jersey_number = $2")
 	errorHandler(err)
 	result, err := sql.Exec(player.Position, player.JerseyNumber)
