@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"github.com/gorilla/mux"
 )
 
@@ -19,19 +20,13 @@ type ReturnMessage struct {
 	Message string `json:"message"`
 }
 
-type DatabaseConfig struct {
-	Host string `json:"db_host"`
-	Port int `json:"db_port"`
-	DB_Name string `json:"db_name"`
-	UserName string `json:"db_userName"`
-	Password string `json:"db_password"`
-}
-
 // Service Entry Point
 
 func main() {
 	router := mux.NewRouter()
-	db := getDatabase()
+	config := getConfiguration()
+	var servicePort string = strconv.FormatInt(int64(config.ServiceConfig.Port), 10)
+	db := getDatabase(config.DatabaseConfig)
 	
 	// Map API calls to a request handler function
 
@@ -42,9 +37,10 @@ func main() {
 	router.HandleFunc("/players/{jerseyNumber}", func(w http.ResponseWriter, r *http.Request) { deletePlayerRequest(w, r, db)}).Methods("DELETE")
 	router.HandleFunc("/players/", func(w http.ResponseWriter, r *http.Request) { updatePlayerRequest(w, r, db)}).Methods("PATCH")
 	
-	fmt.Println("Starting Server")
+	fmt.Println("Starting Service")
+	fmt.Println("Listening On Port " + servicePort)
 	
-	err := http.ListenAndServe(":2222", router)
+	err := http.ListenAndServe((":" + servicePort), router)
 	errorHandler(err)
 }
 

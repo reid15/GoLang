@@ -10,10 +10,9 @@ import (
 
 // Database Functions
 
-func getDatabase() *sql.DB {
-	setDatabaseConfig()
-	port := strconv.FormatInt(int64(GlobalDatabaseConfig.Port), 10)
-	var connectionString string = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", GlobalDatabaseConfig.Host, port, GlobalDatabaseConfig.UserName, GlobalDatabaseConfig.Password, GlobalDatabaseConfig.DB_Name)
+func getDatabase(config DatabaseConfig) *sql.DB {
+	port := strconv.FormatInt(int64(config.Port), 10)
+	var connectionString string = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", config.Host, port, config.UserName, config.Password, config.DB_Name)
 		
 	database, err := sql.Open("postgres", connectionString)
 	errorHandler(err)
