@@ -19,7 +19,7 @@ func isValidJerseyNumberString(jerseyNumber string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -30,11 +30,11 @@ func isValidJerseyNumber(jerseyNumber int) error {
 	if jerseyNumber > 99 {
 		return errors.New("Jersey Number Should Be Less Than 100")
 	}
-	
+
 	return nil
 }
 
-func isValidPlayer (player Player) error {
+func isValidPlayer(player Player) error {
 	err := isValidJerseyNumber(player.JerseyNumber)
 	if err != nil {
 		return err
@@ -51,11 +51,11 @@ func isValidPlayer (player Player) error {
 	if len(player.Position) > 2 {
 		return errors.New("Position Should be 1 or 2 characters")
 	}
-	
+
 	return nil
 }
 
-func isValidPlayerForUpdate (player Player) error {
+func isValidPlayerForUpdate(player Player) error {
 	err := isValidJerseyNumber(player.JerseyNumber)
 	if err != nil {
 		return err
@@ -66,6 +66,6 @@ func isValidPlayerForUpdate (player Player) error {
 	if len(player.Position) > 2 {
 		return errors.New("Position Should be 1 or 2 characters")
 	}
-	
+
 	return nil
 }

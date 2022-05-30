@@ -2,18 +2,18 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
-	"github.com/gorilla/mux"
 )
 
 // Data Structures
 
 type Player struct {
-	JerseyNumber int `json:"jerseyNumber"`
-	FirstName string `json:"firstName"`
-	LastName string `json:"lastName"`
-	Position string `json:"position"`
+	JerseyNumber int    `json:"jerseyNumber"`
+	FirstName    string `json:"firstName"`
+	LastName     string `json:"lastName"`
+	Position     string `json:"position"`
 }
 
 type ReturnMessage struct {
@@ -27,19 +27,19 @@ func main() {
 	config := getConfiguration()
 	var servicePort string = strconv.FormatInt(int64(config.ServiceConfig.Port), 10)
 	db := getDatabase(config.DatabaseConfig)
-	
+
 	// Map API calls to a request handler function
 
-	router.HandleFunc("/players/connectionTest", func(w http.ResponseWriter, r *http.Request) { connectionTestRequest(w, r, db)}).Methods("GET")
-	router.HandleFunc("/players/", func(w http.ResponseWriter, r *http.Request) { getAllPlayersRequest(w, r, db)}).Methods("GET")
-	router.HandleFunc("/players/{jerseyNumber}", func(w http.ResponseWriter, r *http.Request) { getPlayerRequest(w, r, db)}).Methods("GET")
-	router.HandleFunc("/players/", func(w http.ResponseWriter, r *http.Request) { addPlayerRequest(w, r, db)}).Methods("POST")
-	router.HandleFunc("/players/{jerseyNumber}", func(w http.ResponseWriter, r *http.Request) { deletePlayerRequest(w, r, db)}).Methods("DELETE")
-	router.HandleFunc("/players/", func(w http.ResponseWriter, r *http.Request) { updatePlayerRequest(w, r, db)}).Methods("PATCH")
-	
+	router.HandleFunc("/players/connectionTest", func(w http.ResponseWriter, r *http.Request) { connectionTestRequest(w, r, db) }).Methods("GET")
+	router.HandleFunc("/players/", func(w http.ResponseWriter, r *http.Request) { getAllPlayersRequest(w, r, db) }).Methods("GET")
+	router.HandleFunc("/players/{jerseyNumber}", func(w http.ResponseWriter, r *http.Request) { getPlayerRequest(w, r, db) }).Methods("GET")
+	router.HandleFunc("/players/", func(w http.ResponseWriter, r *http.Request) { addPlayerRequest(w, r, db) }).Methods("POST")
+	router.HandleFunc("/players/{jerseyNumber}", func(w http.ResponseWriter, r *http.Request) { deletePlayerRequest(w, r, db) }).Methods("DELETE")
+	router.HandleFunc("/players/", func(w http.ResponseWriter, r *http.Request) { updatePlayerRequest(w, r, db) }).Methods("PATCH")
+
 	fmt.Println("Starting Service")
 	fmt.Println("Listening On Port " + servicePort)
-	
+
 	err := http.ListenAndServe((":" + servicePort), router)
 	errorHandler(err)
 }
