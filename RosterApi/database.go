@@ -55,6 +55,7 @@ func getAllPlayers (database *sql.DB) []Player {
 	
 	result, err := database.Query(query)
 	errorHandler(err)
+	defer result.Close()
 	
 	var outputArray []Player
 	for result.Next() {
@@ -75,6 +76,9 @@ func getAllPlayers (database *sql.DB) []Player {
 		outputArray = append(outputArray, player)
 		
 	}
+	err = result.Err()
+	errorHandler(err)
+	
 	return outputArray
 }
 
