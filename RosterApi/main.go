@@ -9,6 +9,7 @@ import (
 
 // Data Structures
 
+// Player : Player attributes
 type Player struct {
 	JerseyNumber int    `json:"jerseyNumber"`
 	FirstName    string `json:"firstName"`
@@ -16,6 +17,7 @@ type Player struct {
 	Position     string `json:"position"`
 }
 
+// ReturnMessage : Message to return to API user - Error or informational
 type ReturnMessage struct {
 	Message string `json:"message"`
 }

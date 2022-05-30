@@ -12,7 +12,7 @@ import (
 
 func getDatabase(config DatabaseConfig) *sql.DB {
 	port := strconv.FormatInt(int64(config.Port), 10)
-	var connectionString string = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", config.Host, port, config.UserName, config.Password, config.DB_Name)
+	var connectionString string = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", config.Host, port, config.UserName, config.Password, config.DBName)
 
 	database, err := sql.Open("postgres", connectionString)
 	errorHandler(err)
@@ -32,9 +32,8 @@ func getPlayer(jerseyNumber string, database *sql.DB) (Player, error) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return Player{}, errors.New("Player Not Found")
-		} else {
-			panic(err)
 		}
+		panic(err)
 	}
 
 	jerseyNumberInt, err := strconv.Atoi(jerseyNumber)

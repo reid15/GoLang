@@ -8,26 +8,31 @@ import (
 	"io/ioutil"
 )
 
+// DatabaseConfiguration stores data from configuration file for database access
 type DatabaseConfiguration struct {
 	Host     string `json:"db_host"`
 	Port     int    `json:"db_port"`
-	DB_Name  string `json:"db_name"`
+	DBName  string `json:"db_name"`
 	UserName string `json:"db_userName"`
 	Password string `json:"db_password"`
 }
 
+// DatabaseConfig : Database section of configuration file
 type DatabaseConfig struct {
 	DatabaseConfiguration
 }
 
+// ServiceConfiguration stores data from configuration file for service
 type ServiceConfiguration struct {
 	Port int `json:"port"`
 }
 
+// ServiceConfig : Service section of configuration file
 type ServiceConfig struct {
 	ServiceConfiguration
 }
 
+// Configuration : Data from configuration file
 type Configuration struct {
 	ServiceConfig  ServiceConfig
 	DatabaseConfig DatabaseConfig

@@ -19,12 +19,12 @@ func connectionTestRequest(rw http.ResponseWriter, r *http.Request, db *sql.DB) 
 
 func getAllPlayersRequest(rw http.ResponseWriter, r *http.Request, db *sql.DB) {
 	players := getAllPlayers(db)
-	playerJson, err := json.Marshal(players)
+	playerJSON, err := json.Marshal(players)
 	errorHandler(err)
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(playerJson)
+	rw.Write(playerJSON)
 }
 
 func getPlayerRequest(rw http.ResponseWriter, r *http.Request, db *sql.DB) {
@@ -41,12 +41,12 @@ func getPlayerRequest(rw http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	playerJson, err := json.Marshal(player)
+	playerJSON, err := json.Marshal(player)
 	errorHandler(err)
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(playerJson)
+	rw.Write(playerJSON)
 }
 
 func addPlayerRequest(rw http.ResponseWriter, r *http.Request, db *sql.DB) {
@@ -105,16 +105,16 @@ func returnMessage(rw http.ResponseWriter, message string) {
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(200)
 	returnMessage := ReturnMessage{message}
-	returnMessageJson, err := json.Marshal(returnMessage)
+	returnMessageJSON, err := json.Marshal(returnMessage)
 	errorHandler(err)
-	rw.Write(returnMessageJson)
+	rw.Write(returnMessageJSON)
 }
 
 func writeErrorMessage(rw http.ResponseWriter, err error, httpStatusCode int) {
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(httpStatusCode)
 	returnMessage := ReturnMessage{err.Error()}
-	returnMessageJson, err := json.Marshal(returnMessage)
+	returnMessageJSON, err := json.Marshal(returnMessage)
 	errorHandler(err)
-	rw.Write(returnMessageJson)
+	rw.Write(returnMessageJSON)
 }
